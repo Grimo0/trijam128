@@ -20,7 +20,7 @@ class Main extends dn.Process {
 
 		// Engine settings
 		hxd.Timer.wantedFPS = Const.FPS;
-		engine.backgroundColor = 0xff << 24 | 0x000000;
+		engine.backgroundColor = 0xff << 24 | 0xf7f2ec;
 		#if (hl && !debug)
 		engine.fullScreen = true;
 		#end
@@ -38,13 +38,6 @@ class Main extends dn.Process {
 		// Game controller & default key bindings
 		controller = new dn.heaps.Controller(s);
 		ca = controller.createAccess("main");
-		controller.bind(AXIS_LEFT_X_NEG, Key.LEFT, Key.Q, Key.A);
-		controller.bind(AXIS_LEFT_X_POS, Key.RIGHT, Key.D);
-		controller.bind(AXIS_LEFT_Y_POS, Key.UP, Key.Z);
-		controller.bind(AXIS_LEFT_Y_NEG, Key.DOWN, Key.S);
-		controller.bind(X, Key.F);
-		controller.bind(Y, Key.C);
-		controller.bind(A, Key.E);
 		controller.bind(B, Key.SPACE);
 		controller.bind(SELECT, Key.R);
 		controller.bind(START, Key.ESCAPE);
@@ -64,7 +57,7 @@ class Main extends dn.Process {
 		delayer.addF(startGame, 1);
 
 		#if debug
-		debug = true;
+		// debug = true;
 		#end
 	}
 
