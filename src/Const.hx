@@ -17,7 +17,7 @@ class Const {
 	public static var SCALE = 1.0; // ignored if auto-scaling
 	public static var UI_SCALE = 1.0; // ignored if auto-scaling
 
-	public static var GRID(default, set) = 64;
+	public static var GRID(default, set) = 4;
 	static inline function set_GRID(s) {
 		GRID = s;
 		update_SCALE();
@@ -48,7 +48,7 @@ class Const {
 			SCALE = M.ceil(dn.heaps.Scaler.getViewportHeight() / SCALE_AUTO_CHEI);
 		else
 			// can be replaced with another way to determine the game scaling
-			SCALE = dn.heaps.Scaler.bestFit_i(1280, 720);
+			SCALE = dn.heaps.Scaler.bestFit_i(128, 72);
 	}
 
 	/** Specific scaling for top UI elements **/
