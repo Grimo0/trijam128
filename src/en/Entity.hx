@@ -56,11 +56,12 @@ class Entity {
 	public var dxTotal(get, never) : Float;
 	inline function get_dxTotal() return dx + bdx;
 	public var dyTotal(get, never) : Float;
-	inline function get_dyTotal() return dy + bdy;
+	inline function get_dyTotal() return dy + bdy + gravity;
 
 	public var frictX = 0.82;
 	public var frictY = 0.82;
 	public var bumpFrict = 0.93;
+	public var gravity = 1.;
 
 	// Display
 	public var spr : HSprite;
@@ -400,11 +401,18 @@ class Entity {
 		// X
 		var steps = M.ceil(M.fabs(dxTotal * tmod));
 		var step = dxTotal * tmod / steps;
-		while (steps > 0) {
+		while (steps > 0) {			
 			xr += step;
 
-			// [ TODO add X collisions checks here ]
-
+			// Level collision
+			if (step > 0 && game.level.hasCollision(Std.int(right / Const.GRID), cy)) {
+				xr = 1 - (1 - pivotX) * wid / Const.GRID;
+				break;
+			} else if (step < 0 && game.level.hasCollision(Std.int(left / Const.GRID), cy)) {
+				xr = (0 - pivotX) * wid / Const.GRID;
+				break;
+			}
+			
 			while (xr > 1) {
 				xr--;
 				cx++;
@@ -426,7 +434,14 @@ class Entity {
 		while (steps > 0) {
 			yr += step;
 
-			// [ TODO add Y collisions checks here ]
+			// Level collision
+			if (step > 0 && game.level.hasCollision(cx, Std.int(bottom / Const.GRID))) {
+				yr = 1 - (1 - pivotY) * hei / Const.GRID;
+				break;
+			} else if (step < 0 && game.level.hasCollision(cx, Std.int(top / Const.GRID))) {
+				yr = (0 - pivotY) * hei / Const.GRID;
+				break;
+			}
 
 			while (yr > 1) {
 				yr--;

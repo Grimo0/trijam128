@@ -9,6 +9,8 @@ class Ball extends Entity {
 
 		wid = spr.tile.width;
 		hei = spr.tile.height;
+
+		
 	}
 
 	

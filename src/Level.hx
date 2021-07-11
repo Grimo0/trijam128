@@ -9,6 +9,8 @@ class Level extends dn.Process {
 	public var pxWid(get, never) : Int; inline function get_pxWid() return game.pxWid;
 	public var pxHei(get, never) : Int; inline function get_pxHei() return game.pxHei;
 
+	var ground : h2d.Bitmap;
+
 	public function new() {
 		super(game);
 		createRootInLayers(game.scroller, Const.GAME_SCROLLER_LEVEL);
@@ -19,7 +21,7 @@ class Level extends dn.Process {
 	public inline function coordId(cx, cy) return cx + cy * cWid;
 
 	public inline function hasCollision(cx, cy) : Bool
-		return false; // TODO: collision with entities and obstacles
+		return cy >= ground.y / Const.GRID; // TODO: collision with entities and obstacles
 
 	public inline function getFloor(cx, cy) : Int
 		return 0;
@@ -36,10 +38,10 @@ class Level extends dn.Process {
 		root.removeChildren();
 		
 		// TODO Level loading & rendering
-		var ground = Assets.placeholder.getBitmap('pixel');
+		ground = Assets.placeholder.getBitmap('pixel');
 		ground.color.set();
 		ground.width = pxWid;
-		ground.height = .1 * pxHei;
+		ground.height = Const.GRID * 3;
 		ground.y = pxHei - ground.height;
 		root.addChildAt(ground, Const.GAME_LEVEL_BG);
 
