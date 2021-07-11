@@ -48,7 +48,7 @@ class Const {
 			SCALE = M.ceil(dn.heaps.Scaler.getViewportHeight() / SCALE_AUTO_CHEI);
 		else
 			// can be replaced with another way to determine the game scaling
-			SCALE = dn.heaps.Scaler.bestFit_i(128, 72);
+			SCALE = dn.heaps.Scaler.bestFit_i(248, 144);
 	}
 
 	/** Specific scaling for top UI elements **/

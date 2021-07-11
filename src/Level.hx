@@ -36,5 +36,13 @@ class Level extends dn.Process {
 		root.removeChildren();
 		
 		// TODO Level loading & rendering
+		var ground = Assets.placeholder.getBitmap('pixel');
+		ground.color.set();
+		ground.width = pxWid;
+		ground.height = .1 * pxHei;
+		ground.y = pxHei - ground.height;
+		root.addChildAt(ground, Const.GAME_LEVEL_BG);
+
+		var ball = new en.Ball();
 	}
 }
