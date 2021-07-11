@@ -9,9 +9,12 @@ class Ball extends Entity {
 
 		wid = spr.tile.width;
 		hei = spr.tile.height;
-
-		
 	}
 
-	
+	override function postUpdate() {
+		super.postUpdate();
+
+		if (cy > game.level.cHei || cx > game.level.cWid)
+			game.gameOver();
+	}	
 }

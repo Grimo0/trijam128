@@ -94,6 +94,14 @@ class Game extends Process {
 		return f != null ? f : 0;
 	}
 
+	public function gameOver() {
+		
+	}
+
+	public function levelSucess() {
+		
+	}
+
 	function startLevel(?levelUID : Int) {
 		locked = false;
 		started = false;
