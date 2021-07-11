@@ -398,6 +398,8 @@ class Entity {
 	public function fixedUpdate() {}
 
 	public function update() {
+		if (visible) return;
+		
 		// X
 		var steps = M.ceil(M.fabs(dxTotal * tmod));
 		var step = dxTotal * tmod / steps;

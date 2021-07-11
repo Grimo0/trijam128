@@ -9,7 +9,10 @@ class Level extends dn.Process {
 	public var pxWid(get, never) : Int; inline function get_pxWid() return game.pxWid;
 	public var pxHei(get, never) : Int; inline function get_pxHei() return game.pxHei;
 
-	var ground : h2d.Bitmap;
+	public var ground(default, null) : h2d.Bitmap;
+	public var ball(default, null) : en.Ball;
+	public var player1(default, null) : en.Player;
+	public var player2(default, null) : en.Player;
 
 	public function new() {
 		super(game);
@@ -45,12 +48,14 @@ class Level extends dn.Process {
 		ground.y = pxHei - ground.height;
 		root.addChildAt(ground, Const.GAME_LEVEL_BG);
 
-		var ball = new en.Ball();
+		ball = new en.Ball();
+		ball.visible = false;
 
-		var player1 = new en.Player('1');
+		player1 = new en.Player('1');
 		player1.setPosCell(2, Std.int(ground.y / Const.GRID) - 1);
+		player1.hasBall = true;
 
-		var player2 = new en.Player('2');
+		player2 = new en.Player('2');
 		player2.sprScaleX = -1;
 		player2.setPosCell(cWid - 3, Std.int(ground.y / Const.GRID) - 1);
 	}

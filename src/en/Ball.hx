@@ -5,7 +5,6 @@ class Ball extends Entity {
 		super();
 
 		spr.set(Assets.entities, 'BallSpr');
-		spr.color.set(0, .64, 1);
 
 		wid = spr.tile.width;
 		hei = spr.tile.height;
