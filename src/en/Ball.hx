@@ -2,7 +2,7 @@ package en;
 
 class Ball extends Entity {
 	public static final HIT_TIME_TO_REACT = .3 * Const.FPS;
-	public static final HIT_TIME_BOUNCE = 3. * Const.FPS;
+	public static final HIT_TIME_BOUNCE = 2. * Const.FPS;
 
 	public var timeBounce(default, null) : Float;
 	var bouncePressedFrame : Int;
