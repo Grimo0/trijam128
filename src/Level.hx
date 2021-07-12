@@ -49,13 +49,12 @@ class Level extends dn.Process {
 		root.addChildAt(ground, Const.GAME_LEVEL_BG);
 
 		ball = new en.Ball();
-		ball.visible = false;
 
-		player1 = new en.Player('1');
+		player1 = new en.Player(1);
 		player1.setPosCell(2, Std.int(ground.y / Const.GRID) - 1);
 		player1.hasBall = true;
 
-		player2 = new en.Player('2');
+		player2 = new en.Player(2);
 		player2.sprScaleX = -1;
 		player2.setPosCell(cWid - 3, Std.int(ground.y / Const.GRID) - 1);
 	}

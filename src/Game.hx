@@ -1,3 +1,4 @@
+import en.Ball;
 import en.Entity;
 import dn.Process;
 import hxd.Key;
@@ -46,6 +47,10 @@ class Game extends Process {
 
 	var flags : Map<String, Int> = new Map();
 
+	public var timeBounce(default, null) : Float;
+	var canPressBounce = false;
+	var bounceCurve : h2d.Graphics;
+
 	public function new() {
 		super(Main.ME);
 		ME = this;
@@ -66,6 +71,9 @@ class Game extends Process {
 		level = new Level();
 		fx = new Fx();
 		hud = new ui.Hud();
+
+		bounceCurve = new h2d.Graphics();
+		bounceCurve.alpha = .5;
 
 		root.alpha = 0;
 		startLevel();
@@ -95,20 +103,31 @@ class Game extends Process {
 	}
 
 	public function gameOver() {
-		
+		locked = true;
+		ucd.unset("stopFrame");
+		trace('gameOver');
+		delayer.addS('gameOver', () -> startLevel(), 2.);
 	}
 
 	public function levelSucess() {
-		
+		locked = true;
+		trace('levelSucess');
 	}
 
 	function startLevel(?levelUID : Int) {
 		locked = false;
 		started = false;
+		canPressBounce = false;
+		timeBounce = 0.;
 
 		scroller.removeChildren();
 
+		for (e in Entity.ALL)
+			e.destroy();
+
 		level.initLevel();
+		level.root.add(bounceCurve, Const.GAME_LEVEL_TOP);
+		bounceCurve.visible = false;
 
 		resume();
 		Process.resizeAll();
@@ -190,8 +209,8 @@ class Game extends Process {
 			curGameSpeed = targetGameSpeed;
 	}
 
-	public inline function stopFrame() {
-		ucd.setS("stopFrame", 0.2);
+	public inline function stopFrame(s = .2) {
+		ucd.setS("stopFrame", s);
 	}
 
 	override function preUpdate() {
@@ -216,8 +235,61 @@ class Game extends Process {
 		super.update();
 
 		if (!started) {
-			if (ca.startPressed()) {
+			if (ca.bPressed()) {
 				started = true;
+			}
+		}
+
+		if (!locked) {
+			if (!canPressBounce)
+				canPressBounce = ca.bDown();
+			if (canPressBounce && !ca.bDown()) {
+				level.player1.launchBall();
+				canPressBounce = false;
+			} else if (level.ball.canBounce()) {
+				final curveControlXMul = .35;
+				final curveControlYMul = -.6;
+				final curveEndXMul = 1.;
+				if (!canPressBounce)
+					canPressBounce = !ca.bDown();
+
+				if (canPressBounce && ca.bDown()) {
+					if (timeBounce == 0) {
+						level.ball.bounceStart();
+						bounceCurve.visible = true;
+					}
+					
+					timeBounce += utmod;
+
+					// Draw the curve
+					var ballX = level.ball.attachX;
+					var ballY = level.ball.attachY;
+
+					bounceCurve.clear();
+					
+					// Max curve
+					bounceCurve.lineStyle(1 / Const.GRID, 0xff3333, .5);
+					bounceCurve.moveTo(ballX, ballY);
+					bounceCurve.curveTo(
+						ballX + curveControlXMul * Ball.HIT_TIME_BOUNCE, ballY + curveControlYMul * Ball.HIT_TIME_BOUNCE, 
+						ballX + curveEndXMul * Ball.HIT_TIME_BOUNCE, ballY);
+
+					// Current curve
+					bounceCurve.lineStyle(1 / Const.GRID, 0x333333);
+					bounceCurve.moveTo(ballX, ballY);
+					bounceCurve.curveTo(
+						ballX + curveControlXMul * timeBounce, ballY + curveControlYMul * timeBounce, 
+						ballX + curveEndXMul * timeBounce, ballY);
+				} else if (timeBounce > 0) {
+					level.ball.stopBounceTimer();
+					bounceCurve.visible = false;
+
+					// Give the ball the impulsion
+					level.ball.dx = 10 * curveControlXMul * timeBounce / Ball.HIT_TIME_BOUNCE;
+					level.ball.dy = 10 * curveControlYMul * timeBounce / Ball.HIT_TIME_BOUNCE;
+					
+					timeBounce = 0;
+				}
 			}
 		}
 
@@ -292,6 +364,6 @@ class Game extends Process {
 
 		// Update slow-motions
 		updateSlowMos();
-		setTimeMultiplier((0.2 + 0.8 * curGameSpeed) * (ucd.has("stopFrame") ? 0.3 : 1));
+		setTimeMultiplier((0.2 + 0.8 * curGameSpeed) * (ucd.has("stopFrame") ? 0. : 1));
 	}
 }

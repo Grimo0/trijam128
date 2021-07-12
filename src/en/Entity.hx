@@ -5,16 +5,11 @@ class Entity {
 	public static var GC : Array<Entity> = [];
 
 	// Shorthands properties
-	public var game(get, never) : Game;
-	inline function get_game() return Game.ME;
-	public var ftime(get, never) : Float;
-	inline function get_ftime() return Game.ME.ftime;
-	public var utmod(get, never) : Float;
-	inline function get_utmod() return Game.ME.utmod;
-	public var tmod(get, never) : Float;
-	inline function get_tmod() return Game.ME.tmod;
-	public var hud(get, never) : ui.Hud;
-	inline function get_hud() return Game.ME.hud;
+	public var game(get, never) : Game; inline function get_game() return Game.ME;
+	public var level(get, never) : Level; inline function get_level() return game.level;
+	public var ftime(get, never) : Float; inline function get_ftime() return game.ftime;
+	public var utmod(get, never) : Float; inline function get_utmod() return game.utmod;
+	public var tmod(get, never) : Float; inline function get_tmod() return game.tmod;
 
 	// Main properties
 	public var uid(default, null) : Int;
@@ -93,6 +88,11 @@ class Entity {
 	public var prevFrameattachX : Float = -Const.INFINITE;
 	public var prevFrameattachY : Float = -Const.INFINITE;
 
+	public var hitOnRight(default, null) : Bool = false;
+	public var hitOnLeft(default, null) : Bool = false;
+	public var hitOnBottom(default, null) : Bool = false;
+	public var hitOnTop(default, null) : Bool = false;
+
 	var actions : Array<{id : String, cb : Void->Void, t : Float}> = [];
 
 	// Debug
@@ -111,7 +111,7 @@ class Entity {
 			setPosCell(x, y);
 
 		spr = new HSprite(sprLib);
-		game.level.root.add(spr, Const.GAME_LEVEL_ENTITIES);
+		level.root.add(spr, Const.GAME_LEVEL_ENTITIES);
 		spr.colorAdd = new h3d.Vector();
 		baseColor = new h3d.Vector();
 		blinkColor = new h3d.Vector();
@@ -239,7 +239,7 @@ class Entity {
 		if (v != null) {
 			if (debugLabel == null) {
 				debugLabel = new h2d.Text(Assets.fontTiny);
-				game.level.root.add(debugLabel, Const.GAME_LEVEL_TOP);
+				level.root.add(debugLabel, Const.GAME_LEVEL_TOP);
 			}
 			debugLabel.text = Std.string(v);
 			debugLabel.textColor = c;
@@ -257,7 +257,7 @@ class Entity {
 	public function enableBounds() {
 		if (debugBounds == null) {
 			debugBounds = new h2d.Graphics();
-			game.level.root.add(debugBounds, Const.GAME_LEVEL_TOP);
+			level.root.add(debugBounds, Const.GAME_LEVEL_TOP);
 		}
 		invalidateDebugBounds = true;
 	}
@@ -398,8 +398,11 @@ class Entity {
 	public function fixedUpdate() {}
 
 	public function update() {
-		if (visible) return;
-		
+		hitOnRight = false;
+		hitOnLeft = false;
+		hitOnBottom = false;
+		hitOnTop = false;
+
 		// X
 		var steps = M.ceil(M.fabs(dxTotal * tmod));
 		var step = dxTotal * tmod / steps;
@@ -407,11 +410,13 @@ class Entity {
 			xr += step;
 
 			// Level collision
-			if (step > 0 && game.level.hasCollision(Std.int(right / Const.GRID), cy)) {
+			if (step > 0 && level.hasCollision(Std.int(right / Const.GRID), cy)) {
 				xr = 1 - (1 - pivotX) * wid / Const.GRID;
+				hitOnRight = true;
 				break;
-			} else if (step < 0 && game.level.hasCollision(Std.int(left / Const.GRID), cy)) {
+			} else if (step < 0 && level.hasCollision(Std.int(left / Const.GRID), cy)) {
 				xr = (0 - pivotX) * wid / Const.GRID;
+				hitOnLeft = true;
 				break;
 			}
 			
@@ -437,11 +442,13 @@ class Entity {
 			yr += step;
 
 			// Level collision
-			if (step > 0 && game.level.hasCollision(cx, Std.int(bottom / Const.GRID))) {
+			if (step > 0 && level.hasCollision(cx, Std.int(bottom / Const.GRID))) {
 				yr = 1 - (1 - pivotY) * hei / Const.GRID;
+				hitOnBottom = true;
 				break;
-			} else if (step < 0 && game.level.hasCollision(cx, Std.int(top / Const.GRID))) {
+			} else if (step < 0 && level.hasCollision(cx, Std.int(top / Const.GRID))) {
 				yr = (0 - pivotY) * hei / Const.GRID;
+				hitOnTop = true;
 				break;
 			}
 
