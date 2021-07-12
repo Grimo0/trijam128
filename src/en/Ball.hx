@@ -2,7 +2,7 @@ package en;
 
 class Ball extends Entity {
 	public static final HIT_TIME_TO_REACT = .3 * Const.FPS;
-	public static final HIT_TIME_BOUNCE = 5. * Const.FPS;
+	public static final HIT_TIME_BOUNCE = 3. * Const.FPS;
 
 	public var timeBounce(default, null) : Float;
 	var bouncePressedFrame : Int;
@@ -65,6 +65,7 @@ class Ball extends Entity {
 		if (!visible) return;
 
 		// Bounce
+		var startBoucing = false;
 		if (!game.ca.bDown())
 			bouncePressedFrame = 0;
 		else
@@ -74,6 +75,9 @@ class Ball extends Entity {
 			final curveControlXMul = .35;
 			final curveControlYMul = -.6;
 			final curveEndXMul = 1.;
+			
+			var bounceX = .1 * curveControlXMul * timeBounce;
+			var bounceY = .1 * curveControlYMul * timeBounce;
 			
  			if (bouncePressedFrame > 0 && bouncePressedFrame < 5 && game.ca.bDown()) {
 				bouncePressedFrame = 0; // To ensure we don't pass the max frame
@@ -86,39 +90,65 @@ class Ball extends Entity {
 				timeBounce += utmod;
 
 				// Draw the curve
-				var ballX = attachX;
-				var ballY = attachY;
-
 				bounceCurve.clear();
+
+				bounceCurve.beginFill(0xff3333);
+				bounceCurve.drawRect(attachX - wid - 1, bottom, 2, -15);
+				bounceCurve.beginFill(0x00a3ff);
+				bounceCurve.drawRect(attachX - wid - 1, bottom, 2, -15 * timeBounce / HIT_TIME_BOUNCE);
+				
+				/* var currentX = attachX;
+				var currentY = attachY;
 				
 				// Max curve
 				bounceCurve.lineStyle(1 / Const.GRID, 0xff3333, .5);
-				bounceCurve.moveTo(ballX, ballY);
+				bounceCurve.moveTo(currentX, currentY);
 				bounceCurve.curveTo(
-					ballX + curveControlXMul * Ball.HIT_TIME_BOUNCE, ballY + curveControlYMul * Ball.HIT_TIME_BOUNCE, 
-					ballX + curveEndXMul * Ball.HIT_TIME_BOUNCE, ballY);
+					currentX + curveControlXMul * HIT_TIME_BOUNCE, currentY + curveControlYMul * HIT_TIME_BOUNCE, 
+					currentX + curveEndXMul * HIT_TIME_BOUNCE, currentY);
+
+				var endX = 0.;
+				bounceX *= Const.GRID;
+				while (M.fabs(bounceX) > 0.0005) {	
+					endX += bounceX;
+					bounceX *= frictX;
+				}
+				endX = endX + currentX;
+
+				var endY = 0.;
+				while (M.fabs(bounceY) > 0.0005) {	
+					endY += bounceY + gravity;
+					bounceY *= frictY;
+				}
+				endY = endY + currentY;
 
 				// Current curve
 				bounceCurve.lineStyle(1 / Const.GRID, 0x333333);
-				bounceCurve.moveTo(ballX, ballY);
+				bounceCurve.moveTo(currentX, currentY);
 				bounceCurve.curveTo(
-					ballX + curveControlXMul * timeBounce, ballY + curveControlYMul * timeBounce, 
-					ballX + curveEndXMul * timeBounce, ballY);
+					currentX + curveControlXMul * timeBounce, currentY + curveControlYMul * timeBounce, 
+					endX, currentY);
+					
+				bounceCurve.lineStyle(1 / Const.GRID, 0x00a3ff);
+				bounceCurve.moveTo(endX, currentY);
+				bounceCurve.drawCircle(endX, currentY, 2);
+				bounceCurve.moveTo(endX, currentY - 2);
+				bounceCurve.lineTo(endX, currentY - 10); */
 			} else if (timeBounce > 0) {
 				stopBounceTimer();
 				bounceCurve.visible = false;
+				startBoucing = true;
+				timeBounce = 0;
 
 				// Give the ball the impulsion
-				dx = 10 * curveControlXMul * timeBounce / Ball.HIT_TIME_BOUNCE;
-				dy = 10 * curveControlYMul * timeBounce / Ball.HIT_TIME_BOUNCE;
-				
-				timeBounce = 0;
+				dx = bounceX;
+				dy = bounceY;
 			}
 		}
 
 		// Ground hit and friction
 		var groundFrict = 0.;
-		if (hitOnBottom) {
+		if (hitOnBottom && !startBoucing) {
 			groundFrict = .15;
 			
 			if (!ucd.has('hitObstacle') && !game.locked && timeBounce == 0) {
@@ -146,7 +176,13 @@ class Ball extends Entity {
 			&& bottom > game.level.player2.top)
 			game.level.player2.hasBall = true;
 
-		if (timerTxt.visible)
-			timerTxt.text = Std.string(Std.int(ucd.getS('hitObstacle') * 10) / 10);
+		if (timerTxt.visible) {
+			var timeLeft = ucd.getS('hitObstacle');
+			if (timeLeft < 2)
+				timerTxt.color.setColor(0xffff3333);
+			else
+				timerTxt.color.setColor(0xffffffff);
+			timerTxt.text = Std.string(Std.int(timeLeft * 10) / 10) + '\n"Space"';
+		}
 	}	
 }

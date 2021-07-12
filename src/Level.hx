@@ -24,7 +24,7 @@ class Level extends dn.Process {
 	public inline function coordId(cx, cy) return cx + cy * cWid;
 
 	public inline function hasCollision(cx, cy) : Bool
-		return cy >= ground.y / Const.GRID; // TODO: collision with entities and obstacles
+		return cy >= Std.int(ground.y / Const.GRID);
 
 	public inline function getFloor(cx, cy) : Int
 		return 0;
