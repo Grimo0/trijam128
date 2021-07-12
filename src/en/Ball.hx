@@ -31,7 +31,7 @@ class Ball extends Entity {
 		level.root.add(bounceCurve, Const.GAME_LEVEL_TOP);
 
 		timerTxt = new h2d.Text(Assets.fontPixel, spr);
-		timerTxt.setScale(.25);
+		timerTxt.setScale(.5);
 		timerTxt.textAlign = Center;
 		timerTxt.y = hei;
 		timerTxt.visible = false;

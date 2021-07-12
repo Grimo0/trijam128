@@ -1,3 +1,4 @@
+import ui.EndMenu;
 import en.Ball;
 import en.Entity;
 import dn.Process;
@@ -100,13 +101,13 @@ class Game extends Process {
 	public function gameOver() {
 		locked = true;
 		ucd.unset("stopFrame");
-		trace('gameOver');
+		new EndMenu(true);
 		delayer.addF('gameOver', () -> startLevel(), 1);
 	}
 
 	public function levelSucess() {
 		locked = true;
-		trace('levelSucess');
+		new EndMenu(false);
 		delayer.addF('levelSucess', () -> startLevel(), 1);
 	}
 
@@ -237,7 +238,7 @@ class Game extends Process {
 			if (!canLaunchBall)
 				canLaunchBall = ca.bDown();
 			if (canLaunchBall && !ca.bDown()) {
-				level.player1.launchBall();
+				level.player1.launchBall(M.frandRange(1., 2.5));
 				canLaunchBall = false;
 			}
 		}

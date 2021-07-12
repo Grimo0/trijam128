@@ -44,7 +44,7 @@ class Level extends dn.Process {
 		ground = Assets.placeholder.getBitmap('pixel');
 		ground.color.set();
 		ground.width = pxWid;
-		ground.height = Const.GRID * 3;
+		ground.height = Const.GRID * 4;
 		ground.y = pxHei - ground.height;
 		root.addChildAt(ground, Const.GAME_LEVEL_BG);
 

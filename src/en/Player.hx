@@ -32,14 +32,14 @@ class Player extends Entity {
 		hasBall = false;
 	}
 
-	public function launchBall() {
+	public function launchBall(str : Float) {
 		if (!hasBall) return;
 		spr.anim.play('PlayerSpr$id').onEnd(() -> {
 			hasBall = false;
 			ball.visible = true;
 			ball.setPosCell(cx + Std.int(wid * pivotX / Const.GRID), cy - Std.int(hei / Const.GRID));
-			ball.dx = 2;
-			ball.dy = -2;
+			ball.dx = str;
+			ball.dy = -str;
 		});
 	}
 }
